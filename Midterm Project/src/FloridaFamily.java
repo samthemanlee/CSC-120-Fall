@@ -1,9 +1,20 @@
 import java.util.Scanner;
-
+//=================================================================================================
+/**
+ * Perform certain tasks related to teeth record of a florida family
+ * @ Zecheng (Sam) Li
+ */
 public class FloridaFamily {
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Global Scanner object to use keyboard
+     */
     private static final Scanner keyboard = new Scanner(System.in);
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * the main method
+     * @param args Passed in from the command line
+     */
     public static void main(String[] args) {
 
         // Declare variables and arrays:
@@ -28,7 +39,11 @@ public class FloridaFamily {
         MenuOptions(FamilyMembersNames, TeethLayers, FamilyMembersTeethTypes);
 
     } // end of the main method
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Prompt user to input the number of family members
+     * @return the number of family members
+     */
     public static int getFamilyNumbers() {
 
         int numberInFamily;
@@ -47,7 +62,11 @@ public class FloridaFamily {
         return numberInFamily;
 
     } // end of the getFamilyNumbers Method
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Prompt user to input each family member's name
+     * @param inputFamilyMembersNames
+     */
     public static void getFamilyMembersNames(String [] inputFamilyMembersNames) {
 
         // Declare variables:
@@ -62,7 +81,13 @@ public class FloridaFamily {
         } // end of the for loop
 
     } // end of the getFamilyMembersNames method
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Prompt user to input each family member's teeth types and store them in 3D array
+     * @param inputFamilyMembersNames
+     * @param inputTeethLayers
+     * @param inputFamilyMembersTeethTypes
+     */
     public static void getFamilyMembersTeethTypes (String[] inputFamilyMembersNames, String[] inputTeethLayers, char[][][] inputFamilyMembersTeethTypes) {
 
         int name, layer, type;
@@ -110,7 +135,13 @@ public class FloridaFamily {
         } // end of the for loop
 
     } // end of the getFamilyMembersTeethTypes method
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Prompt user to choose one task to perform and output the result of the performance
+     * @param inputFamilyMembersNames
+     * @param inputTeethLayers
+     * @param inputFamilyMembersTeethTypes
+     */
     public static void MenuOptions (String[] inputFamilyMembersNames, String[] inputTeethLayers, char [][][] inputFamilyMembersTeethTypes) {
 
         String userOption;
@@ -156,7 +187,13 @@ public class FloridaFamily {
         } // end of the if-else statements
 
     } // end of the MenuOptions method
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Print teeth records of the family
+     * @param inputFamilyMembersNames
+     * @param inputTeethLayers
+     * @param inputFamilyMembersTeethTypes
+     */
     public static void PrintRecords (String[] inputFamilyMembersNames, String[] inputTeethLayers, char [][][] inputFamilyMembersTeethTypes) {
 
         int name, layer, type;
@@ -185,7 +222,13 @@ public class FloridaFamily {
             } // end of the first nested for loop
         } // end of the for loop
     } // end of the PrintRecords method
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Extract a certain tooth's type
+     * @param inputFamilyMembersNames
+     * @param inputTeethLayers
+     * @param inputFamilyMembersTeethTypes
+     */
     public static void ExtractTooth (String[] inputFamilyMembersNames, String[] inputTeethLayers, char [][][] inputFamilyMembersTeethTypes) {
 
         //declare variables:
@@ -296,7 +339,13 @@ public class FloridaFamily {
         System.out.println(inputFamilyMembersTeethTypes[nameIndex][layerIndex][typeIndex]);
 
     } // end of the ExtractTooth method
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Calculate the root canal(s) of the family
+     * @param inputFamilyMembersNames
+     * @param inputTeethLayers
+     * @param inputFamilyMembersTeethTypes
+     */
     public static void ReportRoots (String[] inputFamilyMembersNames, String[] inputTeethLayers, char [][][] inputFamilyMembersTeethTypes) {
 
         // declare variables:
@@ -386,7 +435,10 @@ public class FloridaFamily {
         } // end of the most outside if-else statement
 
     } // end of the ReportRoots method
-
+//-------------------------------------------------------------------------------------------------
+    /**
+     * Exit the program
+     */
     public static void ExitProgram () {
 
         System.out.println("Exiting the Floridian Tooth Records :-)");
