@@ -51,7 +51,7 @@ public class FloridaFamily {
         System.out.println("Please enter number of people in the family : ");
         numberInFamily = keyboard.nextInt();
 
-        while (numberInFamily < 1 || numberInFamily > 8) {
+        while (numberInFamily < 1 || numberInFamily > 6) {
 
             System.out.println("Invalid number of people, try again         : ");
             numberInFamily = keyboard.nextInt();
@@ -415,15 +415,15 @@ public class FloridaFamily {
                 firstRoot = (1.0 / (2.0 * numberOfIncisors)) * (-numberOfBicuspids + Math.sqrt(discriminant));
                 secondRoot = (1.0 / (2.0 * numberOfIncisors)) * (-numberOfBicuspids - Math.sqrt(discriminant));
 
-                System.out.println("One root canal at     " + firstRoot);
-                System.out.println("Another root canal at " + secondRoot);
+                System.out.printf("One root canal at     %.2f%n", firstRoot);
+                System.out.printf("Another root canal at %.2f%n", secondRoot);
 
             }
             else if (discriminant == 0) {
 
                 commonRoot = (1.0 / (2.0 * numberOfIncisors)) * (-numberOfBicuspids);
 
-                System.out.println("One and only root canal at " + commonRoot);
+                System.out.printf("One and only root canal at %.2f%n", commonRoot);
 
             }
             else {
