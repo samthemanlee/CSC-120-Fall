@@ -1,31 +1,45 @@
-public class Kindle {
+public class KindlePractice {
 
     private int currentPage;
     private int totalPages;
 
-    public Kindle(int totalPages) {
-        this.currentPage = 1;
-        this.totalPages = totalPages;
+    public KindlePractice(int pages) {
+
+        currentPage = 1;
+        totalPages = pages;
+
     } // end of the constructor method
 
     public String toString() {
-        return ("Page   " + currentPage + " of  " + totalPages + ".");
+
+        return String.format("Page   %3d of  %3d.", currentPage, totalPages);
+
     } // end of the toString method
 
-    public void turnPages() {
-        turnPages(1);
-    } // end of the overload version of the turnPages method
+    public void turnPage() {
 
-    public void turnPages(int pagesToTurn) {
+        turnPage(1);
+
+    } // end of the overload turnPage method
+
+    public void turnPage(int pagesToTurn) {
+
         int newPage = currentPage + pagesToTurn;
 
         if (newPage > totalPages || newPage == totalPages) {
+
             System.out.println("Turning " + pagesToTurn + " pages would take you past the last page.");
+            currentPage = newPage;
             System.out.print("You are now on             : ");
             System.out.println(this);
+
         }
-        else{
+        else {
+
             currentPage = newPage;
-        } // end of the if-else statements
-    } // end of the turnPages method
-} // end of the Kindle Class
+
+        } // end of the if-else statement
+
+    } // end of the turnPage method
+
+} // end of the KindlePractice Class
