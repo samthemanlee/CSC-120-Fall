@@ -1,8 +1,4 @@
-import java.util.Scanner;
-
 public class Kindle {
-
-    private static final Scanner keyboard = new Scanner(System.in);
 
     private int currentPage;
     private int totalPages;
