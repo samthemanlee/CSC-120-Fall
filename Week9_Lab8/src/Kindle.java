@@ -20,6 +20,7 @@ public class Kindle {
         int newPage = currentPage + pagesToTurn;
 
         if (newPage > totalPages || newPage == totalPages) {
+            currentPage = totalPages;
             System.out.println("Turning " + pagesToTurn + " pages would take you past the last page.");
             System.out.print("You are now on             : ");
             System.out.println(this);
