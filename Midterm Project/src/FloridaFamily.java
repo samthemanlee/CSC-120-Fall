@@ -1,448 +1,282 @@
 import java.util.Scanner;
-//=================================================================================================
+
 /**
- * Perform certain tasks related to teeth record of a florida family
- * @ Zecheng (Sam) Li
+ * FloridaFamily
+ *
+ * Records a family's teeth (uppers / lowers) using a 3-D char array:
+ *   family[personIndex][layerIndex][toothIndex]
+ * where layerIndex 0 = Uppers, 1 = Lowers.
+ *
+ * Supports:
+ *  - Accept up to 6 family members
+ *  - Each layer up to 8 teeth (characters 'I', 'B', 'M' only)
+ *  - Print records
+ *  - Extract a tooth (mark it 'M'), with full validation & re-prompting
+ *  - Report the family's root canal indices as roots of Ix^2 + Bx - M
+ *
+ * All prompts are case-insensitive where appropriate, and input is validated.
+ *
+ * @author Zecheng (Sam) Li (adapted)
  */
 public class FloridaFamily {
-//-------------------------------------------------------------------------------------------------
-    /**
-     * Global Scanner object to use keyboard
-     */
-    private static final Scanner keyboard = new Scanner(System.in);
-//-------------------------------------------------------------------------------------------------
-    /**
-     * the main method
-     * @param args Passed in from the command line
-     */
-    public static void main(String[] args) {
 
-        // Declare variables and arrays:
-        int numberInFamily;
-        String [] FamilyMembersNames;
-        String [] TeethLayers;
-        char [][][] FamilyMembersTeethTypes;
+    /** Global Scanner object to use keyboard */
+    private static final Scanner keyboard = new Scanner(System.in);
+
+    /** Maximum family size and max teeth per layer */
+    private static final int MAX_FAMILY = 6;
+    private static final int MAX_TEETH_PER_LAYER = 8;
+
+    /* ---------------------- main ---------------------- */
+    public static void main(String[] args) {
 
         // Display welcome message:
         System.out.println("Welcome to the Floridian Tooth Records");
         System.out.println("--------------------------------------");
 
-        // Take inputs and form the 3D array:
-        TeethLayers = new String[] {"Uppers", "Lowers"};
-        numberInFamily = getFamilyNumbers();
-        FamilyMembersNames = new String[numberInFamily];
-        getFamilyMembersNames(FamilyMembersNames);
-        FamilyMembersTeethTypes = new char[numberInFamily][TeethLayers.length][];
-        getFamilyMembersTeethTypes(FamilyMembersNames, TeethLayers, FamilyMembersTeethTypes);
+        // 1) How many people?
+        int numberInFamily = getFamilyNumbers();
 
-        // Process menu options and output results:
-        MenuOptions(FamilyMembersNames, TeethLayers, FamilyMembersTeethTypes);
+        // 2) Prepare storage
+        String[] familyNames = new String[numberInFamily];
+        String[] layers = new String[] {"Uppers", "Lowers"};
+        char[][][] familyTeeth = new char[numberInFamily][layers.length][];
 
-    } // end of the main method
-//-------------------------------------------------------------------------------------------------
+        // 3) For each person: name then immediate collection of uppers and lowers
+        for (int i = 0; i < numberInFamily; i++) {
+            System.out.print("Please enter the name for family member " + (i + 1) + "   : ");
+            familyNames[i] = keyboard.next();
+            // collect uppers and lowers for this member now
+            getTeethForMember(familyNames[i], layers, familyTeeth, i);
+        }
+
+        // 4) Menu loop
+        menuLoop(familyNames, layers, familyTeeth);
+    }
+
+    /* ---------------------- getFamilyNumbers ---------------------- */
     /**
-     * Prompt user to input the number of family members
-     * @return the number of family members
+     * Prompt and validate number of family members (1..MAX_FAMILY)
      */
     public static int getFamilyNumbers() {
+        System.out.print("Please enter number of people in the family : ");
+        int n = keyboard.nextInt();
 
-        int numberInFamily;
-
-        System.out.println("Please enter number of people in the family : ");
-        numberInFamily = keyboard.nextInt();
-
-        while (numberInFamily < 1 || numberInFamily > 6) {
-
-            System.out.println("Invalid number of people, try again         : ");
-            numberInFamily = keyboard.nextInt();
-
+        while (n < 1 || n > MAX_FAMILY) {
+            System.out.print("Invalid number of people, try again         : ");
+            n = keyboard.nextInt();
         }
-        // end of the while loop
+        return n;
+    }
 
-        return numberInFamily;
-
-    } // end of the getFamilyNumbers Method
-//-------------------------------------------------------------------------------------------------
+    /* ---------------------- getTeethForMember ---------------------- */
     /**
-     * Prompt user to input each family member's name
-     * @param inputFamilyMembersNames
+     * For a single member, prompt for each layer (Uppers, Lowers) and validate
+     * letters (I, B, M) and length (<= MAX_TEETH_PER_LAYER).
      */
-    public static void getFamilyMembersNames(String [] inputFamilyMembersNames) {
+    public static void getTeethForMember(String memberName, String[] layers, char[][][] familyTeeth, int memberIndex) {
+        for (int layer = 0; layer < layers.length; layer++) {
+            System.out.print("Please enter the " + layers[layer] + " for " + memberName + "       : ");
+            String s = keyboard.next();
+            s = s.toUpperCase();
 
-        // Declare variables:
-        int name;
-
-        // Fill the string array:
-        for (name = 0; name < inputFamilyMembersNames.length; name++) {
-
-            System.out.println("Please enter the name for family member " + (name + 1) + "   : ");
-            inputFamilyMembersNames[name] = keyboard.next();
-
-        } // end of the for loop
-
-    } // end of the getFamilyMembersNames method
-//-------------------------------------------------------------------------------------------------
-    /**
-     * Prompt user to input each family member's teeth types and store them in 3D array
-     * @param inputFamilyMembersNames
-     * @param inputTeethLayers
-     * @param inputFamilyMembersTeethTypes
-     */
-    public static void getFamilyMembersTeethTypes (String[] inputFamilyMembersNames, String[] inputTeethLayers, char[][][] inputFamilyMembersTeethTypes) {
-
-        int name, layer, type;
-        String teethTypesString;
-
-        for (name = 0; name < inputFamilyMembersNames.length; name++) {
-
-            for (layer = 0; layer < inputTeethLayers.length; layer++) {
-
-                System.out.println("Please enter the " + inputTeethLayers[layer] + " for " + inputFamilyMembersNames[name] + "       : ");
-
-                teethTypesString = keyboard.next();
-                teethTypesString = teethTypesString.toUpperCase();
-
-                while (teethTypesString.length() > 8 || !teethTypesString.matches("[IBM]+")) {
-
-                    if (teethTypesString.length() > 8) {
-
-                        System.out.println("Too many teeth, try again                   : ");
-                        teethTypesString = keyboard.next();
-                        teethTypesString = teethTypesString.toUpperCase();
-
-                    }
-                    else {
-
-                        System.out.println("Invalid teeth types, try again              : ");
-                        teethTypesString = keyboard.next();
-                        teethTypesString = teethTypesString.toUpperCase();
-
-                    } // end of the if-else statements
-
-                } // end of the while loop
-
-                // Initialize the third dimension of the 3D array:
-                inputFamilyMembersTeethTypes[name][layer] = new char[teethTypesString.length()];
-
-                for (type = 0; type < teethTypesString.length(); type++) {
-
-                    inputFamilyMembersTeethTypes[name][layer][type] = teethTypesString.charAt(type);
-
-                } // end of the for loop
-
-            } // end of the first layer nested loop
-
-        } // end of the for loop
-
-    } // end of the getFamilyMembersTeethTypes method
-//-------------------------------------------------------------------------------------------------
-    /**
-     * Prompt user to choose one task to perform and output the result of the performance
-     * @param inputFamilyMembersNames
-     * @param inputTeethLayers
-     * @param inputFamilyMembersTeethTypes
-     */
-    public static void MenuOptions (String[] inputFamilyMembersNames, String[] inputTeethLayers, char [][][] inputFamilyMembersTeethTypes) {
-
-        String userOption;
-        System.out.println("(P)rint, (E)xtract, (R)oot, e(X)it          : ");
-        userOption = keyboard.next();
-        userOption = userOption.toUpperCase();
-
-        while (!userOption.equals("P") && !userOption.equals("E") && !userOption.equals("R") && !userOption.equals("X")) {
-
-            System.out.println("Invalid menu option, try again              : ");
-            userOption = keyboard.next();
-            userOption = userOption.toUpperCase();
-
-        } // end of the while loop
-
-        while (!userOption.equals("X")) {
-
-            if (userOption.equals("P")) {
-
-                PrintRecords(inputFamilyMembersNames, inputTeethLayers, inputFamilyMembersTeethTypes);
-
-            }
-            else if (userOption.equals("E")) {
-
-                ExtractTooth(inputFamilyMembersNames, inputTeethLayers, inputFamilyMembersTeethTypes);
-
-            }
-            else if (userOption.equals("R")) {
-
-                ReportRoots(inputFamilyMembersNames, inputTeethLayers, inputFamilyMembersTeethTypes);
-
+            while (s.length() > MAX_TEETH_PER_LAYER || !s.matches("[IBM]+")) {
+                if (s.length() > MAX_TEETH_PER_LAYER) {
+                    System.out.print("Too many teeth, try again                   : ");
+                } else {
+                    System.out.print("Invalid teeth types, try again              : ");
+                }
+                s = keyboard.next().toUpperCase();
             }
 
-            userOption = keyboard.next();
-            userOption = userOption.toUpperCase();
-
-        } // end of the while loop
-
-        if (userOption.equals("X")) {
-
-            ExitProgram();
-
-        } // end of the if-else statements
-
-    } // end of the MenuOptions method
-//-------------------------------------------------------------------------------------------------
-    /**
-     * Print teeth records of the family
-     * @param inputFamilyMembersNames
-     * @param inputTeethLayers
-     * @param inputFamilyMembersTeethTypes
-     */
-    public static void PrintRecords (String[] inputFamilyMembersNames, String[] inputTeethLayers, char [][][] inputFamilyMembersTeethTypes) {
-
-        int name, layer, type;
-
-        for (name = 0; name < inputFamilyMembersNames.length; name++) {
-
-            System.out.println(inputFamilyMembersNames[name]);
-
-            for (layer = 0; layer < inputTeethLayers.length; layer++) {
-
-                System.out.print("  " + inputTeethLayers[layer] + ":  ");
-
-                for (type = 0; type < inputFamilyMembersTeethTypes[name][layer].length; type++) {
-
-                    if (type < inputFamilyMembersTeethTypes[name][layer].length -1) {
-
-                        System.out.print((type + 1) + ":" + inputFamilyMembersTeethTypes[name][layer][type] + "  ");
-
-                    }
-                    else {
-
-                        System.out.println((type + 1) + ":" + inputFamilyMembersTeethTypes[name][layer][type] + "  ");
-
-                    } // end of the if else statement
-                } // end of the second nested for loop
-            } // end of the first nested for loop
-        } // end of the for loop
-    } // end of the PrintRecords method
-//-------------------------------------------------------------------------------------------------
-    /**
-     * Extract a certain tooth's type
-     * @param inputFamilyMembersNames
-     * @param inputTeethLayers
-     * @param inputFamilyMembersTeethTypes
-     */
-    public static void ExtractTooth (String[] inputFamilyMembersNames, String[] inputTeethLayers, char [][][] inputFamilyMembersTeethTypes) {
-
-        //declare variables:
-        String userChoiceOfFamilyMember;
-        String userChoiceOfTeethLayer;
-        int userChoiceOfToothNumber;
-        int name, layer;
-        int nameIndex, layerIndex, typeIndex;
-        boolean foundName;
-        boolean foundLayer;
-
-        // prompt a user input of family member:
-        System.out.println("Which family member                         : ");
-        userChoiceOfFamilyMember = keyboard.next();
-        foundName = false;
-
-        do {
-
-            for (name = 0; name < inputFamilyMembersNames.length; name++) {
-
-                if (userChoiceOfFamilyMember.equalsIgnoreCase(inputFamilyMembersNames[name])) {
-
-                    foundName = true;
-                    break;
-
-                } // end of the if else statement
-
-            } // end of the for loop
-
-            if (!foundName) {
-
-                System.out.println("Invalid family member, try again            : ");
-                userChoiceOfFamilyMember = keyboard.next();
-
-            } // end of the if statement
-
-        } while (!foundName);
-        // end of the do while loop
-
-        // prompt a user input of teeth layer:
-        System.out.println("Which tooth layer (U)pper or (L)ower        : ");
-        userChoiceOfTeethLayer = keyboard.next();
-        foundLayer = false;
-
-        do {
-
-            for (layer = 0; layer < inputTeethLayers.length; layer++) {
-
-                if(userChoiceOfTeethLayer.equalsIgnoreCase(String.valueOf(inputTeethLayers[layer].charAt(0)))) {
-
-                    foundLayer = true;
-                    break;
-
-                } // end of the if statement
-
-            } // end of the for loop
-
-            if(!foundLayer) {
-
-                System.out.println("Invalid layer, try again                    : ");
-                userChoiceOfTeethLayer = keyboard.next();
-
-            } // end of the if statement
-
-        } while(!foundLayer);
-        // end of the do while loop
-
-        // get the index of the chosen name:
-        nameIndex = 0;
-
-        for (name = 0; name < inputFamilyMembersNames.length; name++) {
-
-            if(inputFamilyMembersNames[name].equalsIgnoreCase(userChoiceOfFamilyMember)) {
-
-                nameIndex += name;
-
-            } // end of the if statement
-
-        } // end of the for loop
-
-        // get the index of the chosen layer:
-        layerIndex = 0;
-
-        for (layer = 0; layer < inputTeethLayers.length; layer++) {
-
-            if (Character.toUpperCase(inputTeethLayers[layer].charAt(0)) == Character.toUpperCase(userChoiceOfTeethLayer.charAt(0))) { // fix to
-
-                layerIndex += layer;
-
-            } // end of the if statement
-
-        } // end of the for loop
-
-        // prompt a user input of tooth number:
-        System.out.println("Which tooth number                          : ");
-        userChoiceOfToothNumber = keyboard.nextInt();
-
-        while (userChoiceOfToothNumber > inputFamilyMembersTeethTypes[nameIndex][layerIndex].length || userChoiceOfToothNumber < 1) {
-
-            System.out.println("Invalid tooth number, try again             : ");
-            userChoiceOfToothNumber = keyboard.nextInt();
-
-        } // end of the while loop
-
-        typeIndex = userChoiceOfToothNumber - 1;
-
-        // output the wanted tooth type:
-        System.out.println(inputFamilyMembersTeethTypes[nameIndex][layerIndex][typeIndex]);
-
-    } // end of the ExtractTooth method
-//-------------------------------------------------------------------------------------------------
-    /**
-     * Calculate the root canal(s) of the family
-     * @param inputFamilyMembersNames
-     * @param inputTeethLayers
-     * @param inputFamilyMembersTeethTypes
-     */
-    public static void ReportRoots (String[] inputFamilyMembersNames, String[] inputTeethLayers, char [][][] inputFamilyMembersTeethTypes) {
-
-        // declare variables:
-        int numberOfIncisors, numberOfBicuspids, numberOfMissingTeeth;
-        int name, layer, type;
-        double discriminant;
-        double firstRoot;
-        double secondRoot;
-        double commonRoot;
-        double linearRoot;
-
-        // initialize variables:
-        numberOfIncisors = 0;
-        numberOfBicuspids = 0;
-        numberOfMissingTeeth = 0;
-
-        // get of family's number of different types of teeth:
-        for (name = 0; name < inputFamilyMembersNames.length; name++) {
-
-            for (layer = 0; layer < inputTeethLayers.length; layer++) {
-
-                for (type = 0; type < inputFamilyMembersTeethTypes[name][layer].length; type++) {
-
-                    if (inputFamilyMembersTeethTypes[name][layer][type] == 'I') {
-
-                        numberOfIncisors++;
-
-                    }
-                    else if(inputFamilyMembersTeethTypes[name][layer][type] == 'B') {
-
-                        numberOfBicuspids++;
-
-                    }
-                    else if(inputFamilyMembersTeethTypes[name][layer][type] == 'M') {
-
-                        numberOfMissingTeeth++;
-
-                    } // end of the if-else statements
-
-                } // end of the second nested for loop
-
-            } // end of the first nested for loop
-
-        } // end of the for loop
-
-        if (numberOfIncisors == 0) {
-
-            if (numberOfBicuspids == 0) {
-
-                System.out.println("The root does not exist.");
-
-            }
-            else {
-
-                linearRoot = (numberOfMissingTeeth * 1.0) / (numberOfBicuspids * 1.0);
-                System.out.println("One and only root canal at " + linearRoot);
-
-            } // end of the nested if-else statement
+            familyTeeth[memberIndex][layer] = s.toCharArray();
         }
-        else {
+    }
 
-            // Calculate and analyze the discriminant:
-            discriminant = Math.pow(numberOfBicuspids, 2) - 4 * numberOfIncisors * (-numberOfMissingTeeth);
-
-            if (discriminant > 0) {
-
-                firstRoot = (1.0 / (2.0 * numberOfIncisors)) * (-numberOfBicuspids + Math.sqrt(discriminant));
-                secondRoot = (1.0 / (2.0 * numberOfIncisors)) * (-numberOfBicuspids - Math.sqrt(discriminant));
-
-                System.out.printf("One root canal at     %.2f%n", firstRoot);
-                System.out.printf("Another root canal at %.2f%n", secondRoot);
-
-            }
-            else if (discriminant == 0) {
-
-                commonRoot = (1.0 / (2.0 * numberOfIncisors)) * (-numberOfBicuspids);
-
-                System.out.printf("One and only root canal at %.2f%n", commonRoot);
-
-            }
-            else {
-
-                System.out.println("Complex Roots");
-
-            } // end of the if-else statements
-
-        } // end of the most outside if-else statement
-
-    } // end of the ReportRoots method
-//-------------------------------------------------------------------------------------------------
+    /* ---------------------- menuLoop ---------------------- */
     /**
-     * Exit the program
+     * Main menu loop that accepts P/E/R/X in any case and repeats until X.
      */
-    public static void ExitProgram () {
+    public static void menuLoop(String[] familyNames, String[] layers, char[][][] familyTeeth) {
+        String option;
+        System.out.print("\n(P)rint, (E)xtract, (R)oot, e(X)it          : ");
+        option = keyboard.next();
+        option = option.toUpperCase();
 
+        // Validate first entry
+        while (!option.equals("P") && !option.equals("E") && !option.equals("R") && !option.equals("X")) {
+            System.out.print("Invalid menu option, try again              : ");
+            option = keyboard.next().toUpperCase();
+        }
+
+        while (!option.equals("X")) {
+            if (option.equals("P")) {
+                System.out.println();
+                printRecords(familyNames, layers, familyTeeth);
+            } else if (option.equals("E")) {
+                extractTooth(familyNames, layers, familyTeeth);
+            } else if (option.equals("R")) {
+                reportRoots(familyNames, layers, familyTeeth);
+            }
+
+            System.out.print("\n(P)rint, (E)xtract, (R)oot, e(X)it          : ");
+            option = keyboard.next().toUpperCase();
+
+            while (!option.equals("P") && !option.equals("E") && !option.equals("R") && !option.equals("X")) {
+                System.out.print("Invalid menu option, try again              : ");
+                option = keyboard.next().toUpperCase();
+            }
+        }
+
+        // exit
+        System.out.println();
         System.out.println("Exiting the Floridian Tooth Records :-)");
+    }
 
-    } // end of the ExitProgram method
+    /* ---------------------- printRecords ---------------------- */
+    /**
+     * Print family records in the requested format.
+     */
+    public static void printRecords(String[] familyNames, String[] layers, char[][][] familyTeeth) {
+        for (int p = 0; p < familyNames.length; p++) {
+            System.out.println(familyNames[p]);
 
-} // end of the Florida Family class
+            // Uppers (layer 0) then Lowers (layer 1)
+            for (int layer = 0; layer < layers.length; layer++) {
+                System.out.print("  " + layers[layer] + ":  ");
+                char[] row = familyTeeth[p][layer];
+                for (int t = 0; t < row.length; t++) {
+                    // print with two spaces between entries as in sample
+                    System.out.print((t + 1) + ":" + row[t]);
+                    if (t < row.length - 1) System.out.print("  ");
+                }
+                System.out.println();
+            }
+        }
+    }
+
+    /* ---------------------- extractTooth ---------------------- */
+    /**
+     * Prompt which family member, which layer (U/L), and which tooth number.
+     * Validate all inputs and, if the chosen tooth is not missing, mark it 'M'.
+     */
+    public static void extractTooth(String[] familyNames, String[] layers, char[][][] familyTeeth) {
+        // Which family member
+        System.out.print("\nWhich family member                         : ");
+        String nameInput = keyboard.next();
+        int personIndex = -1;
+        for (int i = 0; i < familyNames.length; i++) {
+            if (familyNames[i].equalsIgnoreCase(nameInput)) {
+                personIndex = i;
+                break;
+            }
+        }
+        while (personIndex == -1) {
+            System.out.print("Invalid family member, try again            : ");
+            nameInput = keyboard.next();
+            for (int i = 0; i < familyNames.length; i++) {
+                if (familyNames[i].equalsIgnoreCase(nameInput)) {
+                    personIndex = i;
+                    break;
+                }
+            }
+        }
+
+        // Which layer: accept first char U or L (case-insensitive)
+        System.out.print("Which tooth layer (U)pper or (L)ower        : ");
+        String layerInput = keyboard.next();
+        while (layerInput.length() == 0) {
+            System.out.print("Invalid layer, try again                    : ");
+            layerInput = keyboard.next();
+        }
+        char lch = Character.toUpperCase(layerInput.charAt(0));
+        while (lch != 'U' && lch != 'L') {
+            System.out.print("Invalid layer, try again                    : ");
+            layerInput = keyboard.next();
+            lch = Character.toUpperCase(layerInput.charAt(0));
+        }
+        int layerIndex = (lch == 'U') ? 0 : 1;
+
+        // Which tooth number
+        System.out.print("Which tooth number                          : ");
+        int toothNumber = keyboard.nextInt();
+
+        // Loop until valid number and not already missing
+        while (true) {
+            if (toothNumber < 1 || toothNumber > familyTeeth[personIndex][layerIndex].length) {
+                System.out.print("Invalid tooth number, try again             : ");
+                toothNumber = keyboard.nextInt();
+                continue;
+            }
+            int tIndex = toothNumber - 1;
+            if (familyTeeth[personIndex][layerIndex][tIndex] == 'M') {
+                System.out.print("Missing tooth, try again                    : ");
+                toothNumber = keyboard.nextInt();
+                continue;
+            }
+            // valid and not missing -> extract (mark as 'M') and return
+            familyTeeth[personIndex][layerIndex][tIndex] = 'M';
+            break;
+        }
+    }
+
+    /* ---------------------- reportRoots ---------------------- */
+    /**
+     * Compute counts I, B, M across whole family and report roots of:
+     *     I*x^2 + B*x - M = 0
+     *
+     * Behavior:
+     *  - If I == 0 and B == 0 -> "The root does not exist."
+     *  - If I == 0 and B != 0 -> linear root: x = M / B
+     *  - Else compute discriminant = B^2 - 4 * I * (-M) = B^2 + 4*I*M,
+     *    then two real roots (if discriminant > 0), one repeated root (==0), or "Complex Roots".
+     */
+    public static void reportRoots(String[] familyNames, String[] layers, char[][][] familyTeeth) {
+
+        int countI = 0, countB = 0, countM = 0;
+
+        for (int p = 0; p < familyNames.length; p++) {
+            for (int layer = 0; layer < layers.length; layer++) {
+                for (int t = 0; t < familyTeeth[p][layer].length; t++) {
+                    char ch = familyTeeth[p][layer][t];
+                    if (ch == 'I') countI++;
+                    else if (ch == 'B') countB++;
+                    else if (ch == 'M') countM++;
+                }
+            }
+        }
+
+        // Handle special cases
+        if (countI == 0) {
+            if (countB == 0) {
+                System.out.println("The root does not exist.");
+                return;
+            } else {
+                // B*x - M = 0 -> x = M / B
+                double linearRoot = (double) countM / (double) countB;
+                System.out.printf("One and only root canal at %.2f%n", linearRoot);
+                return;
+            }
+        }
+
+        // Quadratic: I*x^2 + B*x - M = 0
+        // a = I, b = B, c = -M  => discriminant = b^2 - 4*a*c = B^2 + 4*I*M
+        double a = countI;
+        double b = countB;
+        double c = -countM;
+        double discriminant = Math.pow(b, 2) - 4.0 * a * c; // equals B^2 + 4*I*M
+
+        if (discriminant > 0.0) {
+            double sqrtD = Math.sqrt(discriminant);
+            double r1 = (-b + sqrtD) / (2.0 * a);
+            double r2 = (-b - sqrtD) / (2.0 * a);
+            System.out.printf("One root canal at     %.2f%n", r1);
+            System.out.printf("Another root canal at %.2f%n", r2);
+        } else if (Math.abs(discriminant) < 1e-12) { // treat as zero
+            double r = (-b) / (2.0 * a);
+            System.out.printf("One and only root canal at %.2f%n", r);
+        } else {
+            System.out.println("Complex Roots");
+        }
+    }
+}
