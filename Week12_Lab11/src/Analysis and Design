@@ -1,0 +1,51 @@
+Object Oriented Design Process
+Created by Sam Li
+Date: 11/17/2025
+
+Analysis:
+    Domain:
+
+        1. Diamond
+        2. Girl
+        3. Driver that runs the program
+
+    Function Points:
+
+        1. Diamond:
+            i. takes carats and values
+        2. Girl:
+            i. takes name, and a diamond object
+        3. Driver:
+            i. loops in new values and output the new values
+
+    Scenarios:
+
+        1. Example:
+            i.  Girl has no diamond
+            ii. Girl receives a diamond, and accepts it
+            iii.Girl receives new diamond, new diamond is larger, and she accepts it
+            iv. Girl receives a third diamond, third diamond is smaller, and she rejects it
+
+Design:
+
+    Class and Objects:
+
+        1. Class Girl: myGirl
+        2. Class Diamond: myDiamond
+
+    Data:
+
+        1. Girl: String name, diamond
+        2. Diamond: int carat, int value
+
+    Methods:
+
+        1. Diamond:
+            i. constructor
+            ii. setter and getter
+            iii. toString
+
+        2. Girl:
+            i. constructor
+            ii. setter and getter
+            iii. toString
