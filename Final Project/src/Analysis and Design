@@ -1,0 +1,99 @@
+Object Oriented Design Process
+Created by Sam Li
+Date: 11/27/2025
+
+Analysis:
+
+Domain:
+1. Boat – represents a single boat with relevant details.
+2. Fleet – a collection of boats with methods to manipulate and report on them.
+3. CSVLoader – helper to load boat data from a CSV file.
+4. Driver – class containing main() to run the program and interact with the user.
+
+Function Points:
+
+1. Boat:
+   - Stores type (sailing/power), name, year, make/model, length in feet, purchase price, and expenses.
+   - Calculates remaining budget for expenses.
+
+2. Fleet:
+   - Maintains a collection of Boat objects.
+   - Adds or removes boats.
+   - Finds boats by name (case-insensitive).
+   - Prints fleet report with total purchase price and total expenses.
+   - Supports saving and loading the fleet from persistent storage (FleetData.db).
+
+3. CSVLoader:
+   - Reads boat data from a CSV file and constructs Boat objects.
+   - Adds boats to a new Fleet object.
+
+4. Driver:
+   - Uses Scanner to interact with the user (only place with keyboard input).
+   - Presents menu options: Print, Add, Remove, Expense, Exit.
+   - Handles user input and updates the Fleet accordingly.
+   - Ensures expense validation before adding to a boat.
+
+Scenarios:
+
+1. Printing Fleet:
+   - User selects P → prints detailed fleet report including individual boat info and totals.
+
+2. Adding a Boat:
+   - User selects A → enters new boat CSV data → boat added to fleet → confirmation message.
+
+3. Removing a Boat:
+   - User selects R → enters boat name → boat removed if exists → appropriate confirmation/error message.
+
+4. Spending on a Boat:
+   - User selects E → enters boat name → enters expense → adds expense if within budget → error if exceeds budget.
+
+5. Exiting Program:
+   - User selects X → fleet saved to file → program exits.
+
+Design:
+
+Classes and Objects:
+1. Boat → myBoat objects
+2. Fleet → myFleet object containing multiple Boat objects
+3. CSVLoader → utility class (static methods) for loading fleets from CSV
+4. Driver → main() program controller
+
+Data:
+1. Boat:
+   - BoatType type
+   - String name
+   - int year
+   - String makeModel
+   - int lengthFeet
+   - double purchasePrice
+   - double expenses
+
+2. Fleet:
+   - List<Boat> boats
+
+Methods:
+
+1. Boat:
+   - Constructor: initializes all fields
+   - Getters for all attributes
+   - canSpend(double amount) → checks if expenses can be added
+   - addExpense(double amount) → increments expenses
+   - remainingBudget() → returns remaining budget
+   - toString() → returns formatted string of boat info
+
+2. Fleet:
+   - addBoat(Boat b)
+   - removeBoat(String name)
+   - findBoat(String name)
+   - printFleet() → prints each boat and totals
+   - load() → loads Fleet from persistent file
+   - save(Fleet fleet) → saves Fleet to persistent file
+
+3. CSVLoader:
+   - loadFromCSV(String filename) → returns a Fleet loaded from CSV
+
+4. Driver:
+   - Presents menu
+   - Reads input using Scanner
+   - Calls appropriate methods on Fleet/Boat
+   - Validates input (expense limits, existing boats, CSV format)
